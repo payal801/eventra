@@ -44,6 +44,10 @@ public class ShowService {
         Venue venue = venueRepository.findById(request.getVenueId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Venue not found with id " + request.getVenueId()));
+        
+        if (showRepository.existsByVenueIdAndStartTime(venue.getId(), request.getStartTime())) {
+            throw new ConflictException("This venue already has a show at that time");
+        }
 
         Show show = Show.builder()
                 .event(event)
@@ -75,6 +79,11 @@ public class ShowService {
     @Transactional
     public ShowResponse update(Long id, ShowUpdateRequest request) {
         Show show = findOrThrow(id);
+        
+        if (showRepository.existsByVenueIdAndStartTimeAndIdNot(
+                show.getVenue().getId(), request.getStartTime(), id)) {
+            throw new ConflictException("This venue already has a show at that time");
+        }
 
         show.setStartTime(request.getStartTime());
         show.setBasePrice(request.getBasePrice());
