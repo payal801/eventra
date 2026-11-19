@@ -36,5 +36,17 @@ public class GlobalExceptionHandler {
         body.put("message", "Validation failed");
         body.put("errors", fieldErrors);
         return ResponseEntity.badRequest().body(body);
+        
+        
+    }
+    
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, Object>> handleConflict(ConflictException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now().toString());
+        body.put("status", 409);
+        body.put("error", "Conflict");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 }
