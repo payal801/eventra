@@ -9,8 +9,10 @@ import com.payal.eventra.dto.EventRequest;
 import com.payal.eventra.dto.EventResponse;
 import com.payal.eventra.entity.Event;
 import com.payal.eventra.entity.User;
+import com.payal.eventra.exception.ConflictException;
 import com.payal.eventra.exception.ResourceNotFoundException;
 import com.payal.eventra.repository.EventRepository;
+import com.payal.eventra.repository.ShowRepository;
 import com.payal.eventra.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final ShowRepository showRepository;
 
     @Transactional
     public EventResponse create(EventRequest request) {
@@ -70,6 +73,11 @@ public class EventService {
     @Transactional
     public void delete(Long id) {
         Event event = findOrThrow(id);
+
+        if (showRepository.existsByEventId(id)) {
+            throw new ConflictException("Cannot delete an event that has shows. Delete its shows first.");
+        }
+
         eventRepository.delete(event);
     }
 
