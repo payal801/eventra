@@ -89,6 +89,12 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT,
                 "This operation conflicts with existing data", request, Map.of());
     }
+    
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex,
+                                                       HttpServletRequest request) {
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), request, Map.of());
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleOther(Exception ex, HttpServletRequest request) {
