@@ -66,6 +66,14 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public UserResponse getCurrentUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UnauthorizedException("User no longer exists"));
+
+        return toResponse(user);
+    }
+
     private UserResponse toResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())

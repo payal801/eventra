@@ -2,6 +2,8 @@ package com.payal.eventra.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +13,7 @@ import com.payal.eventra.dto.AuthResponse;
 import com.payal.eventra.dto.LoginRequest;
 import com.payal.eventra.dto.RegisterRequest;
 import com.payal.eventra.dto.UserResponse;
+import com.payal.eventra.security.AuthenticatedUser;
 import com.payal.eventra.service.AuthService;
 
 import jakarta.validation.Valid;
@@ -32,4 +35,9 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
-} 
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> me(@AuthenticationPrincipal AuthenticatedUser principal) {
+        return ResponseEntity.ok(authService.getCurrentUser(principal.getId()));
+    }
+}
